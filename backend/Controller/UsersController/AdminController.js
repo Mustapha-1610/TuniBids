@@ -4,6 +4,7 @@ import generateToken from "../../utils/generateToken.js";
 import asyncHandler from "express-async-handler";
 import Bidder from "../../Models/UserEntities/Bidder.js";
 import Seller from "../../Models/UserEntities/Seller.js";
+import { sendSellerConfirmationEmail } from "../../utils/NodeMailerConfig.js";
 
 // Create an admin account
 export const createAdmin = asyncHandler(async (req, res, next) => {
@@ -87,3 +88,20 @@ export const getBidders = asyncHandler(async (req, res) => {
 });
 
 //
+export const validateSeller = asyncHandler(async (req, res) => {
+  try {
+    const { AdminId, SellerId } = req.body;
+    const admin = await Admin.findById(AdminId);
+    let seller = await Seller.findById(SellerId);
+    if (!seller || !admin) {
+      res.json({ Message: "Server Error Or Invalid Inputs" });
+    }
+    seller.ValidationStatus = true;
+    await seller.save();
+    sendSellerConfirmationEmail(seller.BusinessName, seller.Email);
+    return res.json({ Message: "Seller Verified" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ Message: "Server Error" });
+  }
+});

@@ -5,7 +5,12 @@ const LandingPagePrivateRouter = () => {
   const bidderAccount = useSelector(
     (state) => state?.bidderData?.bidderInfo?.BidderAccount
   );
-  return bidderAccount ? <Navigate to={"/bidder/"} /> : <Outlet />;
+  const sellerInfo = useSelector((state) => state.sellerData.sellerInfo);
+  if (sellerInfo) {
+    return <Navigate to={"/seller/profile"} />;
+  } else {
+    return bidderAccount ? <Navigate to={"/bidder/"} /> : <Outlet />;
+  }
 };
 
 export default LandingPagePrivateRouter;

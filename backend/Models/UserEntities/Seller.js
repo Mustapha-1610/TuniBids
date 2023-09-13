@@ -1,13 +1,10 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 const sellerSchema = new Schema({
-  Name: {
+  BusinessName: {
     type: String,
     required: true,
-  },
-  Surname: {
-    type: String,
-    required: true,
+    unique: true,
   },
   Email: {
     type: String,
@@ -21,7 +18,6 @@ const sellerSchema = new Schema({
   },
   ProfilePicture: {
     type: String,
-    required: true,
   },
   State: {
     type: String,
@@ -40,10 +36,6 @@ const sellerSchema = new Schema({
     required: true,
     unique: true,
   },
-  ProfilePicture: {
-    type: String,
-    required: false,
-  },
   BusinessLicense: {
     type: String,
   },
@@ -54,9 +46,6 @@ const sellerSchema = new Schema({
   ValidationStatus: {
     type: Boolean,
     default: false,
-  },
-  ValidationCode: {
-    type: String,
   },
   TaxRegistrationCertificate: {
     type: String,

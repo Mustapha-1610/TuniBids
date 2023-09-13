@@ -3,7 +3,8 @@ import axios from "axios";
 const USERS_URL = "/api/users";
 const Admin_URL = "/api/admin";
 const Bidder_URL = "/api/bidder";
-
+const Seller_URL = "/api/seller";
+const AuctionListing_URL = "/api/auctionlisting";
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -82,6 +83,32 @@ export const adminApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
+export const sellerApiSlice = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    sellerlogin: builder.mutation({
+      query: (data) => ({
+        url: `${Seller_URL}/login`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    sellerCreateAuctionListing: builder.mutation({
+      query: (data) => ({
+        url: `${AuctionListing_URL}/create`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    sellersignup: builder.mutation({
+      query: (data) => ({
+        url: `${Seller_URL}/create`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+  }),
+});
+
 export const { useLoginMutation } = usersApiSlice;
 export const { useAdminloginMutation, useAdmingetbiddersQuery } = adminApiSlice;
 export const {
@@ -90,3 +117,9 @@ export const {
   useBidderActivationMutation,
   useSendBidderActivationMailMutation,
 } = biddersApiSlice;
+
+export const {
+  useSellerloginMutation,
+  useSellerCreateAuctionListingMutation,
+  useSellersignupMutation,
+} = sellerApiSlice;

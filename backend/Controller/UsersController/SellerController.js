@@ -1,13 +1,14 @@
-import Seller from "../../Models/UserEntities/Seller";
-import Admin from "../../Models/UserEntities/Admin";
+import Seller from "../../Models/UserEntities/Seller.js";
+import Admin from "../../Models/UserEntities/Admin.js";
 import bcrypt from "bcryptjs";
-import { sendSellerConfirmationEmail } from "../../Config/NodeMailerConfig";
+import { sendSellerConfirmationEmail } from "../../utils/NodeMailerConfig.js";
+import asyncHandler from "express-async-handler";
+import generateSellerToken from "../../utils/generateSellerToken.js";
 
 // Sign up function with tests on account existance and password encrypting
-export const Signup = async (req, res, next) => {
+export const sellerSignup = asyncHandler(async (req, res, next) => {
   const {
-    Name,
-    Surname,
+    BusinessName,
     Email,
     Password,
     State,
@@ -16,76 +17,62 @@ export const Signup = async (req, res, next) => {
     PhoneNumber,
   } = req.body;
   if (
-    !Name &&
-    !Surname &&
-    !Email &&
-    !Password &&
-    !State &&
-    !City &&
-    !FullLocation &&
+    !BusinessName ||
+    !Email ||
+    !Password ||
+    !State ||
+    !City ||
+    !FullLocation ||
     !PhoneNumber
   ) {
-    return res.status(422).json({ Message: "invalid input" });
+    return res.json({ Message: "invalid input" });
   }
   let existingSeller;
   existingSeller = await Seller.findOne({ Email });
   if (existingSeller) {
-    return res.status(400).json({ message: "Account Exists Allready !" });
+    return res.json({ message: "Account Exists Allready !" });
   }
-  let newSeller;
   const securePassword = bcrypt.hashSync(Password);
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let ValidationCode = "";
-  for (let i = 0; i < 25; i++) {
-    ValidationCode += characters[Math.floor(Math.random() * characters.length)];
-  }
-  try {
-    newSeller = new Seller({
-      Name,
-      Surname,
-      Email,
-      Password: securePassword,
-      State,
-      City,
-      FullLocation,
-      PhoneNumber,
-      ValidationCode,
-    });
-    await newSeller.save();
-  } catch (err) {
-    console.log(err);
-  }
-  return res.status(201).json({ newSeller });
-};
-// Log in function with tests on existance of the account and the validity and active status of the account
-export const Login = async (req, res) => {
-  const { Email, Password } = req.body;
+  existingSeller = await Seller.create({
+    BusinessName,
+    Email,
+    Password: securePassword,
+    State,
+    City,
+    FullLocation,
+    PhoneNumber,
+  });
+  return res.status(201).json({
+    Message:
+      "Account Created You Will Be Contacted With An Email Upon Account Verification !",
+  });
+});
 
+// Log in function with tests on existance of the account and the validity and active status of the account
+export const sellerLogin = asyncHandler(async (req, res) => {
+  const { Email, Password } = req.body;
   let SellerAccount;
-  if (!Email && !Password) {
-    return res.status(401).json({ Message: "Invalid Input" });
+  if (!Email || !Password) {
+    return res.json({ Message: "Invalid Input" });
   }
-  try {
-    SellerAccount = await Seller.findOne({ Email });
-  } catch (err) {
-    console.log(err);
-  }
+  SellerAccount = await Seller.findOne({ Email });
   if (!SellerAccount) {
     return res.status(404).json({ Message: "Account Dosent Exist" });
   }
   const passwordcheck = bcrypt.compareSync(Password, SellerAccount.Password);
   if (!passwordcheck) {
-    return res.status(404).json({ Message: "Invalid email or password !" });
+    return res.json({ Message: "Invalid email or password !" });
   }
   if (SellerAccount.ActiveStatus == false) {
-    return res.status(401).json({ Message: "This Account Is Disabled" });
+    return res.json({ Message: "This Account Is Disabled" });
   }
   if (SellerAccount.ValidationStatus == false) {
-    return res.status(401).json({ Message: "Account Awaiting Validation" });
+    return res.json({ Message: "Account Awaiting Validation" });
   }
-  return res.status(200).json({ SellerAccount });
-};
+  generateSellerToken(res, SellerAccount._id);
+  return res.json({ SellerAccount });
+});
+
 //
 export const getSeller = async (req, res) => {
   try {
@@ -99,6 +86,7 @@ export const getSeller = async (req, res) => {
     return res.status(500).json({ Message: "Server Error !" });
   }
 };
+
 // Function to display all Sellers
 export const AllSellers = async (req, res) => {
   let AllSellers;
@@ -113,21 +101,23 @@ export const AllSellers = async (req, res) => {
     res.status(200).json({ AllSellers });
   }
 };
+
 // Function to display all seller accounts who are waiting to be validated
 export const SellersPendingValidation = async (req, res) => {
   let PendingSellers;
   try {
     PendingSellers = await Seller.find({ ValidationStatus: false });
     if (PendingSellers.length === 0) {
-      return res
-        .status(200)
-        .json({ Message: "There are no current sellers pending validation" });
+      return res.json({
+        Message: "There are no current sellers pending validation",
+      });
     }
     res.status(200).json({ PendingSellers });
   } catch (err) {
     console.log(err);
   }
 };
+
 // Function to validate a seller account
 export const SendConfirmationEmail = async (req, res) => {
   try {
@@ -144,6 +134,7 @@ export const SendConfirmationEmail = async (req, res) => {
   }
   return res.status(200).json({ Message: "Account Validated" });
 };
+
 // function to unvalidate and delete a seller account
 export const SellerAccountUnvalidating = async (req, res) => {
   const AdminId = req.params.AdminId;
@@ -162,6 +153,7 @@ export const SellerAccountUnvalidating = async (req, res) => {
     console.log(err);
   }
 };
+
 // function to disable a seller account making it unavailable for log in
 export const SellerAccountDisabling = async (req, res) => {
   const SellerId = req.params.SellerId;
@@ -178,21 +170,8 @@ export const SellerAccountDisabling = async (req, res) => {
   await DisabledAccount.save();
   return res.status(200).json({ Message: "Account Disabled" });
 };
+
 //
-export const VerifySellerAccount = async (req, res) => {
-  try {
-    let SellerAccount = await Seller.findById(req.params.SellerId);
-    const ActivationCode = req.params.ActivationCode;
-    if (!ActivationCode === SellerAccount.ActivationCode) {
-      return res.status(400).json({ Message: "Error try again later !" });
-    }
-    SellerAccount.ValidationStatus = true;
-    SellerAccount = await SellerAccount.save();
-    return res
-      .status(201)
-      .json({ Message: "Email verified you can now log in !" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ Message: "Server Error" });
-  }
-};
+export const VerifySellerAccount = asyncHandler(async (req, res) => {});
+
+export const getProfile = async (req, res) => {};

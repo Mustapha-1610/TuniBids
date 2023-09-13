@@ -57,13 +57,17 @@ const sellerSlice = createSlice({
   reducers: {
     setSellerCredentials: (state, action) => {
       state.sellerInfo = action.payload;
-      localStorage.setItem("adminInfo", JSON.stringify(action.payload));
+      localStorage.setItem("sellerInfo", JSON.stringify(action.payload));
+    },
+    sellerLogout: (state, action) => {
+      state.sellerInfo = null;
+      localStorage.removeItem("sellerInfo");
     },
   },
 });
 
 export const { setBidderCredentials, bidderLogout } = bidderSlice.actions;
-export const { setSellerCredentials } = sellerSlice.actions;
+export const { setSellerCredentials, sellerLogout } = sellerSlice.actions;
 export const { setAdminCredentials, adminLogout } = adminSlice.actions;
 
 export const adminReducer = adminSlice.reducer;

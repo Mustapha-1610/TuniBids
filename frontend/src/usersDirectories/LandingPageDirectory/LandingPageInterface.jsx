@@ -8,6 +8,8 @@ import Signup from "./Pages/SignupPage";
 import Navbar from "./Components/Navbar.jsx";
 import ActivationPage from "./Pages/Activationpage";
 import EmailConfirmaed from "./Pages/EmailConfirmed";
+import SellerLogin from "./Pages/SellerLogin";
+import SellerSignup from "./Pages/SellerSignup";
 import LandingPagePrivateRouter from "./LandingPagePrivateRouter";
 function LandingPageInterface() {
   return (
@@ -17,6 +19,8 @@ function LandingPageInterface() {
         <Route path="" element={<LandingPagePrivateRouter />}>
           <Route path="/" index={true} element={<LandingHomePage />} />
           <Route path="/email/Confirmation" element={<EmailConfirmaed />} />
+          <Route path="/seller/login" element={<SellerLogin />} />
+          <Route path="/seller/signup" element={<SellerSignup />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/onGoing" element={<LandingOngoingPage />} />
           <Route path="/finiched" element={<LandingFinichedPage />} />

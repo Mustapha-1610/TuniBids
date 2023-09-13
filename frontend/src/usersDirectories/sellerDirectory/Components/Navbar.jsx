@@ -1,30 +1,57 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { bidderLogout } from "../../../../Slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { sellerLogout } from "../../../../Slices/authSlice";
 import { io } from "socket.io-client";
+import { useSelector } from "react-redux";
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const socket = io("http://localhost:5000/seller");
+  const sellerInfo = useSelector((state) => state.sellerData.sellerInfo);
   useEffect;
   return (
     <nav style={styles.navbar}>
       <ul style={styles.navbarList}>
         <li style={styles.navbarItem}>
-          <Link to="/bidder/" style={styles.navbarLink}>
+          <Link to="/seller/" style={styles.navbarLink}>
             home
           </Link>
         </li>
         <li style={styles.navbarItem}>
-          <Link to="/bidder/profile" style={styles.navbarLink}>
-            profile
+          <Link to="/seller/ongoing" style={styles.navbarLink}>
+            onGoing Auctions
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/seller/finiched" style={styles.navbarLink}>
+            Finiched Auctions
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/seller/orders" style={styles.navbarLink}>
+            Orders
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/seller/create" style={styles.navbarLink}>
+            Create
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/seller/profile" style={styles.navbarLink}>
+            Profile
           </Link>
         </li>
         <li style={styles.navbarItem}>
           <button
             onClick={() => {
-              dispatch(bidderLogout()), navigate("/index/");
+              navigate("/index/"),
+                dispatch(
+                  sellerLogout(),
+                  socket.emit("sellerLoggedOut", sellerInfo._id)
+                );
             }}
           >
             Logout

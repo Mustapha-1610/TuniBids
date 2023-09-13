@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
-const generateBidderToken = (res, bidderId) => {
-  const token = jwt.sign({ bidderId }, process.env.JWT_SECRET, {
+const generateSellerToken = (res, sellerId) => {
+  const token = jwt.sign({ sellerId }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
   res.cookie("jwt", token, {
@@ -12,4 +12,4 @@ const generateBidderToken = (res, bidderId) => {
   });
 };
 
-export default generateBidderToken;
+export default generateSellerToken;

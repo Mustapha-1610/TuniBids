@@ -31,8 +31,8 @@ const Navbar = () => {
           </Link>
         </li>
         <li style={styles.navbarItem}>
-          <Link to="/index/signup" style={styles.navbarLink}>
-            Signup
+          <Link to="/index/seller/login" style={styles.navbarLink}>
+            Seller Login
           </Link>
         </li>
       </ul>

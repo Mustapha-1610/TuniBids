@@ -1,12 +1,7 @@
 import mongoose from "mongoose";
-import Bidder from "../UserEntities/Bidder.js";
 const Schema = mongoose.Schema;
 const auctionlistingSchema = new Schema({
   Title: {
-    type: String,
-    required: true,
-  },
-  Description: {
     type: String,
     required: true,
   },
@@ -16,6 +11,7 @@ const auctionlistingSchema = new Schema({
   },
   MinParticipatedUsers: {
     type: Number,
+    required: true,
   },
   FreeTokens: [
     {
@@ -28,13 +24,17 @@ const auctionlistingSchema = new Schema({
       },
     },
   ],
-  DateStartAuction: {
-    type: Date,
-    required: true,
-  },
-  DateFinichAuction: {
-    type: Date,
-  },
+  Date: [
+    {
+      DataStartAuction: {
+        type: Date,
+        required: true,
+      },
+      DateEndAuction: {
+        type: Date,
+      },
+    },
+  ],
   AuctionHolder: {
     type: String,
   },
@@ -52,10 +52,29 @@ const auctionlistingSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  Product: {
-    type: Schema.Types.ObjectId,
-    ref: "Product",
-  },
+  Product: [
+    {
+      ProductDescription: {
+        type: String,
+        required: true,
+      },
+      MagasinPrice: {
+        type: Number,
+        required: true,
+      },
+      ReservePrice: {
+        type: Number,
+        required: true,
+      },
+      ProductImage: {
+        type: Buffer,
+      },
+      Quantity: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
   AdminRejectionComment: {
     type: String,
   },

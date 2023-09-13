@@ -15,7 +15,6 @@ const LoginPage = () => {
 
   const handleMailRequest = async (e, Name, Email, _id, ActivationCode) => {
     const res = await sendMail({ Name, Email, _id, ActivationCode });
-    setErrorMessage("Email Sent Check Your Inbox");
   };
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -28,15 +27,16 @@ const LoginPage = () => {
         <>
           {err.data.Message}
           <button
-            onClick={() =>
+            onClick={() => (
               handleMailRequest(
                 e,
                 err.data.Name,
                 err.data.Email,
                 err.data._id,
                 err.data.ActivationCode
-              )
-            }
+              ),
+              setErrorMessage("Email Sent Check Your Inbox")
+            )}
           >
             Send Mail
           </button>
@@ -70,6 +70,10 @@ const LoginPage = () => {
         />
         <button type="submit">Click</button>
       </form>
+      <h5>
+        Dont Have An Account ?{" "}
+        <button onClick={() => navigate("/index/signup")}>SignUp</button>
+      </h5>
     </>
   );
 };

@@ -1,26 +1,46 @@
-import AuctionListing from "../../Models/AuctionEntities/AuctionListing";
-import Product from "../../Models/AuctionEntities/Product";
-import Bidder from "../../Models/UserEntities/Bidder";
-import Order from "../../Models/AuctionEntities/Order";
+import AuctionListing from "../../Models/AuctionEntities/AuctionListing.js";
+import Bidder from "../../Models/UserEntities/Bidder.js";
+import Order from "../../Models/AuctionEntities/Order.js";
 
 //
 export const CreateAuctionListing = async (req, res) => {
-  const { Title, Description, ParticipationFee, DateStart } = req.body;
+  const {
+    Title,
+    ProductDescription,
+    ParticipationFee,
+    DataStartAuction,
+    MagasinPrice,
+    ReservePrice,
+    Quantity,
+    MinParticipatedUsers,
+  } = req.body;
   const currentDate = new Date();
-  if (new Date(DateStart) < currentDate) {
+  if (new Date(DataStartAuction) < currentDate) {
     return res
       .status(400)
       .json({ Message: "Invalid date. Dates cannot be in the past." });
   }
   let newAuctionListing;
   try {
-    newAuctionListing = new AuctionListing({
+    newAuctionListing = await AuctionListing.create({
       Title,
-      Description,
+      ProductDescription,
       ParticipationFee,
-      DateStartAuction: new Date(DateStart),
-      AuctionHolder: req.params.SellerId,
-      Product: req.params.ProductId,
+      Date: [
+        {
+          DataStartAuction,
+        },
+      ],
+      Product: [
+        {
+          ProductDescription,
+          MagasinPrice,
+          ReservePrice,
+          Quantity,
+        },
+      ],
+      AuctionHolder: req.seller._id,
+      MinParticipatedUsers,
     });
     newAuctionListing = await newAuctionListing.save();
     return res.status(200).json({ newAuctionListing });
