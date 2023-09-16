@@ -4,48 +4,64 @@ import bcrypt from "bcryptjs";
 import { sendSellerConfirmationEmail } from "../../utils/NodeMailerConfig.js";
 import asyncHandler from "express-async-handler";
 import generateSellerToken from "../../utils/generateSellerToken.js";
+import AuctionListing from "../../Models/AuctionEntities/AuctionListing.js";
 
 // Sign up function with tests on account existance and password encrypting
 export const sellerSignup = asyncHandler(async (req, res, next) => {
-  const {
-    BusinessName,
-    Email,
-    Password,
-    State,
-    City,
-    FullLocation,
-    PhoneNumber,
-  } = req.body;
-  if (
-    !BusinessName ||
-    !Email ||
-    !Password ||
-    !State ||
-    !City ||
-    !FullLocation ||
-    !PhoneNumber
-  ) {
-    return res.json({ Message: "invalid input" });
+  try {
+    console.log("test");
+    const {
+      BusinessName,
+      Email,
+      Password,
+      State,
+      City,
+      FullLocation,
+      PhoneNumber,
+      TaxRegistrationCertificate,
+      BusinessLicense,
+      BusinessLogo,
+    } = req.body;
+    console.log("HELLOOO");
+    if (
+      !BusinessName ||
+      !Email ||
+      !Password ||
+      !State ||
+      !City ||
+      !FullLocation ||
+      !PhoneNumber ||
+      !TaxRegistrationCertificate ||
+      !BusinessLicense ||
+      !BusinessLogo
+    ) {
+      return res.json({ Message: "invalid input" });
+    }
+    let existingSeller;
+    existingSeller = await Seller.findOne({ Email });
+    if (existingSeller) {
+      return res.json({ message: "Account Exists Allready !" });
+    }
+    const securePassword = bcrypt.hashSync(Password);
+    existingSeller = await Seller.create({
+      BusinessName,
+      Email,
+      Password: securePassword,
+      State,
+      City,
+      FullLocation,
+      PhoneNumber,
+      TaxRegistrationCertificate,
+      BusinessLicense,
+      BusinessLogo,
+    });
+    return res.status(201).json({
+      Message:
+        "Account Created You Will Be Contacted With An Email Upon Account Verification !",
+    });
+  } catch (err) {
+    console.log(err);
   }
-  let existingSeller;
-  existingSeller = await Seller.findOne({ Email });
-  if (existingSeller) {
-    return res.json({ message: "Account Exists Allready !" });
-  }
-  const securePassword = bcrypt.hashSync(Password);
-  existingSeller = await Seller.create({
-    BusinessName,
-    Email,
-    Password: securePassword,
-    State,
-    City,
-    FullLocation,
-    PhoneNumber,
-  });
-  return res.status(201).json({
-    Message:
-      "Account Created You Will Be Contacted With An Email Upon Account Verification !",
-  });
 });
 
 // Log in function with tests on existance of the account and the validity and active status of the account
@@ -73,35 +89,6 @@ export const sellerLogin = asyncHandler(async (req, res) => {
   return res.json({ SellerAccount });
 });
 
-//
-export const getSeller = async (req, res) => {
-  try {
-    let SellerAccount = await Seller.findById(req.params.SellerId);
-    if (!SellerAccount) {
-      return res.status(400).json({ Message: "Input Or Data Base Error" });
-    }
-    return res.status(200).json({ SellerAccount });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ Message: "Server Error !" });
-  }
-};
-
-// Function to display all Sellers
-export const AllSellers = async (req, res) => {
-  let AllSellers;
-  try {
-    AllSellers = await Seller.find();
-  } catch (err) {
-    console.log(err);
-  }
-  if (AllSellers.length === 0) {
-    res.status(200).json({ Message: "There Are No Sellers" });
-  } else {
-    res.status(200).json({ AllSellers });
-  }
-};
-
 // Function to display all seller accounts who are waiting to be validated
 export const SellersPendingValidation = async (req, res) => {
   let PendingSellers;
@@ -116,23 +103,6 @@ export const SellersPendingValidation = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-};
-
-// Function to validate a seller account
-export const SendConfirmationEmail = async (req, res) => {
-  try {
-    let SellerAccount = await Seller.findById(req.params.SellerId);
-    sendSellerConfirmationEmail(
-      SellerAccount.Name,
-      SellerAccount.Email,
-      SellerAccount._id,
-      SellerAccount.ValidationCode
-    );
-    return res.status(200).json({ Message: "Email Sent !" });
-  } catch (err) {
-    console.log(err);
-  }
-  return res.status(200).json({ Message: "Account Validated" });
 };
 
 // function to unvalidate and delete a seller account
@@ -174,4 +144,96 @@ export const SellerAccountDisabling = async (req, res) => {
 //
 export const VerifySellerAccount = asyncHandler(async (req, res) => {});
 
-export const getProfile = async (req, res) => {};
+//
+export const getOngoingAuctions = async (req, res) => {
+  try {
+    const auctionId = req.body.auctionId;
+    const auction = await AuctionListing.findById(auctionId);
+    return res.json({ auction });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ Message: "Server Error" });
+  }
+};
+
+export const getCompletedAuctions = async (req, res) => {
+  try {
+    const auctionId = req.body.auctionId;
+    const auction = await AuctionListing.findById(auctionId);
+    return res.json({ auction });
+  } catch (err) {
+    console.log(err);
+    return res.json({ Message: "Server Error" });
+  }
+};
+
+export const endAuction = async (req, res) => {
+  const auctionId = req.body.auctionId;
+  let seller = req.seller;
+  try {
+    let completedAuction = await AuctionListing.findById(auctionId);
+    const newOngoingArray = seller.Listings.Ongoing.filter(
+      (_id) => _id.toString() !== auctionId.toString()
+    );
+
+    console.log(newOngoingArray);
+    seller.Listings.Ongoing = newOngoingArray;
+    seller.Listings.Finiched.push(auctionId);
+    await seller.save();
+    return res.json({ seller });
+  } catch (err) {
+    console.log(err);
+    return res.json({ Message: "Server Error" });
+  }
+};
+
+export const getUpdatedProfile = async (req, res) => {
+  try {
+    return res.json({ seller: req.seller });
+  } catch (err) {
+    console.log(err);
+    return res.json({ Message: "Error" });
+  }
+};
+
+export const editSeller = asyncHandler(async (req, res) => {
+  try {
+    const {
+      BusinessName,
+      Email,
+      Password,
+      ConfirmPassword,
+      FullLocation,
+      State,
+      City,
+
+      BusinessLogo,
+      PhoneNumber,
+    } = req.body;
+    let seller = req.seller;
+    BusinessName ? (seller.BusinessName = BusinessName) : null;
+    Email ? (seller.Email = Email) : null;
+    FullLocation ? (seller.FullLocation = FullLocation) : null;
+    State ? (seller.State = State) : null;
+    City ? (seller.City = City) : null;
+    PhoneNumber ? (seller.PhoneNumber = PhoneNumber) : null;
+    BusinessLogo ? (seller.BusinessLogo = BusinessLogo) : null;
+
+    if (Password && !ConfirmPassword) {
+      return res.json({ Message: "Confirm Password Is Missing" });
+    } else if (Password != ConfirmPassword) {
+      return res.json({ Message: "Passwords Dont Match" });
+    } else if (Password) {
+      const passwordcheck = bcrypt.compareSync(Password, seller.Password);
+      if (passwordcheck) {
+        return res.json({ Message: "Cannot Use The Same Old Password" });
+      }
+      seller.Password = Password;
+    }
+    await seller.save();
+    return res.json({ seller });
+  } catch (err) {
+    console.log(err);
+    res.json({ Message: "Server Error" });
+  }
+});

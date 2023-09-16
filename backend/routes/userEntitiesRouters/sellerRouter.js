@@ -6,7 +6,19 @@ const sellerRouter = expreess.Router();
 sellerRouter.post("/create", SellerController.sellerSignup);
 sellerRouter.post("/login", SellerController.sellerLogin);
 sellerRouter
-  .route("/profile")
-  .get(protectSellerRoutes, SellerController.getProfile);
+  .route("/getAuctions")
+  .post(protectSellerRoutes, SellerController.getOngoingAuctions);
+sellerRouter
+  .route("/getCompletedAuctions")
+  .post(protectSellerRoutes, SellerController.getCompletedAuctions);
+sellerRouter
+  .route("/endAuction")
+  .post(protectSellerRoutes, SellerController.endAuction);
+sellerRouter
+  .route("/getUpdatedPorfile")
+  .get(protectSellerRoutes, SellerController.getUpdatedProfile);
+sellerRouter
+  .route("/edit")
+  .post(protectSellerRoutes, SellerController.editSeller);
 
 export default sellerRouter;

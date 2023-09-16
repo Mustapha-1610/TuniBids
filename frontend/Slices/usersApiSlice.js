@@ -106,6 +106,33 @@ export const sellerApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    editSeller: builder.mutation({
+      query: (data) => ({
+        url: `${Seller_URL}/edit`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getauctionlistings: builder.mutation({
+      query: (data) => ({
+        url: `${Seller_URL}/getAuctions`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getCompletedAuctionListings: builder.mutation({
+      query: (data) => ({
+        url: `${Seller_URL}/getCompletedAuctions`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getUpdatedProfile: builder.query({
+      query: () => ({
+        url: `${Seller_URL}/getUpdatedPorfile`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -122,4 +149,8 @@ export const {
   useSellerloginMutation,
   useSellerCreateAuctionListingMutation,
   useSellersignupMutation,
+  useGetauctionlistingsMutation,
+  useGetCompletedAuctionListingsMutation,
+  useGetUpdatedProfileQuery,
+  useEditSellerMutation,
 } = sellerApiSlice;

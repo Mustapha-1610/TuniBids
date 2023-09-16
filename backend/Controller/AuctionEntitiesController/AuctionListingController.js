@@ -4,46 +4,64 @@ import Order from "../../Models/AuctionEntities/Order.js";
 
 //
 export const CreateAuctionListing = async (req, res) => {
-  const {
-    Title,
-    ProductDescription,
-    ParticipationFee,
-    DataStartAuction,
-    MagasinPrice,
-    ReservePrice,
-    Quantity,
-    MinParticipatedUsers,
-  } = req.body;
-  const currentDate = new Date();
-  if (new Date(DataStartAuction) < currentDate) {
-    return res
-      .status(400)
-      .json({ Message: "Invalid date. Dates cannot be in the past." });
-  }
-  let newAuctionListing;
   try {
+    const {
+      Title,
+      ProductDescription,
+      ParticipationFee,
+      DataStartAuction,
+      MagasinPrice,
+      ReservePrice,
+      Quantity,
+      MinParticipatedUsers,
+      ProductImage,
+    } = req.body;
+    if (
+      !Title ||
+      !ProductDescription ||
+      !ParticipationFee ||
+      !DataStartAuction ||
+      !MagasinPrice ||
+      !ReservePrice ||
+      !Quantity ||
+      !MinParticipatedUsers ||
+      !ProductImage
+    ) {
+      return res
+        .status(400)
+        .json({ Message: "One Or More Inputs Are Missing !" });
+    }
+    const currentDate = new Date();
+    if (new Date(DataStartAuction) < currentDate) {
+      return res
+        .status(400)
+        .json({ Message: "Invalid date. Dates cannot be in the past." });
+    }
+    let newAuctionListing;
+
     newAuctionListing = await AuctionListing.create({
       Title,
       ProductDescription,
       ParticipationFee,
-      Date: [
-        {
-          DataStartAuction,
-        },
-      ],
-      Product: [
-        {
-          ProductDescription,
-          MagasinPrice,
-          ReservePrice,
-          Quantity,
-        },
-      ],
+      Date: {
+        DataStartAuction,
+      },
+
+      Product: {
+        ProductDescription,
+        MagasinPrice,
+        ReservePrice,
+        Quantity,
+        ProductImage,
+      },
       AuctionHolder: req.seller._id,
       MinParticipatedUsers,
     });
-    newAuctionListing = await newAuctionListing.save();
-    return res.status(200).json({ newAuctionListing });
+    await newAuctionListing.save();
+    let seller = req.seller;
+    seller.Listings.Ongoing.push(newAuctionListing._id);
+    seller.save();
+    return res.status(200).json({ Message: "Listing Created", seller: seller });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ Message: "Server Error" });
@@ -51,6 +69,7 @@ export const CreateAuctionListing = async (req, res) => {
 };
 
 //
+
 export const AuctionParticipation = async (req, res) => {
   let ParticipatingBidder, Auction;
   const BidderId = req.params.BidderId;

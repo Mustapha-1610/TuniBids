@@ -1,0 +1,23 @@
+.auction-box-container {
+  display: grid;
+  flex-wrap: wrap; /* Allows boxes to wrap to the next line */
+  width: 100%; /* Make the container wide enough to fit all boxes */
+}
+
+.auction-box {
+  width: calc(
+    40% - 60px
+  ); /* Adjust the width to fit 4 boxes per row with a 20px gap */
+  margin: 10px; /* Add some margin between boxes */
+  border: 1px solid #ccc;
+  padding: 20px;
+  text-align: center;
+  max-width: 400px; /* Limit the width of each box */
+}
+
+.auction-image {
+  max-width: 100%; /* Ensure the image doesn't overflow the box */
+  max-height: 150px; /* Limit the image height */
+  display: block;
+  margin: 0 auto 10px; /* Center the image vertically and add space below */
+}

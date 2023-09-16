@@ -20,13 +20,8 @@ const Navbar = () => {
           </Link>
         </li>
         <li style={styles.navbarItem}>
-          <Link to="/seller/ongoing" style={styles.navbarLink}>
-            onGoing Auctions
-          </Link>
-        </li>
-        <li style={styles.navbarItem}>
-          <Link to="/seller/finiched" style={styles.navbarLink}>
-            Finiched Auctions
+          <Link to="/seller/myauctions" style={styles.navbarLink}>
+            My Auctions
           </Link>
         </li>
         <li style={styles.navbarItem}>

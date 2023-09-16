@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 const Schema = mongoose.Schema;
 const sellerSchema = new Schema({
   BusinessName: {
@@ -53,6 +53,54 @@ const sellerSchema = new Schema({
   Rating: {
     type: Number,
     default: 0,
+  },
+  Listings: {
+    Ongoing: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "AuctionListing",
+      },
+    ],
+    Finiched: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "AuctionListing",
+      },
+    ],
+    PendingApproval: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "AuctionListing",
+      },
+    ],
+  },
+  Earnings: {
+    type: Number,
+    default: 0,
+  },
+  Orders: {
+    Pending: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+      },
+    ],
+    Shipped: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+      },
+    ],
+    Disputed: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+      },
+    ],
+  },
+  BusinessLogo: {
+    type: String,
+    required: true,
   },
 });
 export default mongoose.model("Seller", sellerSchema);

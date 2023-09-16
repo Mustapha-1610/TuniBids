@@ -19,7 +19,17 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://25t95h0z-3000.euw.devtunnels.ms",
+    ],
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true,
+  })
+);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,11 +43,19 @@ app.use("/api/seller", sellerRouter);
 app.use("/api/auctionlisting", auctionListingRouter);
 
 const server = http.createServer(app, (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "http://localhost:3000",
+    "https://25t95h0z-3000.euw.devtunnels.ms",
+    "http://localhost:5000/socket.io/?EIO=4&transport=polling&t=OgFzrS"
+  );
 });
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://25t95h0z-3000.euw.devtunnels.ms",
+    ],
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
