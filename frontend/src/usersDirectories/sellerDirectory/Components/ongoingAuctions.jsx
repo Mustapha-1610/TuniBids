@@ -32,7 +32,8 @@ const OngoingAuctions = (props) => {
           <div>Title: {auction.Title}</div>
           <br />
           <div>
-            Participated Bidders: {auction?.ParticipatedBidders?.length}
+            Participated Bidders: {auction?.ParticipatedBidders?.length} /{" "}
+            {auction?.MinParticipatedUsers}
           </div>
           <div>
             Date Start Auction :{" "}

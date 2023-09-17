@@ -112,6 +112,7 @@ const SellerEditInfoPage = () => {
       e.preventDefault();
       handleFormSubmit();
     } else if (bisLogo?.name == updatedImg?.name) {
+      console.log("hello");
       e.preventDefault();
       handleFormSubmit();
     } else if (form.BusinessLogo == sellerInfo.BusinessLogo) {
@@ -124,6 +125,7 @@ const SellerEditInfoPage = () => {
   };
   const handleFormSubmit = async (e) => {
     try {
+      setUpdatedimg(bisLogo);
       setErrMessage("");
       const res = await editSeller(form);
       console.log(res);
@@ -147,16 +149,25 @@ const SellerEditInfoPage = () => {
   }, [businessLogoUrl, launchUpload]);
   useEffect(() => {
     console.log(prevImg, bisLogo);
-  }, [prevImg, bisLogo, updatedImg]);
+  }, [prevImg, bisLogo, updatedImg, handleImageUpload, handleFormSubmit]);
   return (
     <>
-      <form onSubmit={handleImageUpload}>
+      <form
+        onSubmit={handleImageUpload}
+        style={{
+          width: "500px",
+          margin: "auto",
+          border: "1px solid black",
+          padding: "20px",
+          marginTop: "100px",
+        }}
+      >
         <br />
         <img
           src={img}
           style={{
-            width: "100px",
-            height: "100px",
+            width: "200px",
+            height: "200px",
             borderRadius: "50%",
             display: "block",
             margin: "auto",
@@ -174,6 +185,7 @@ const SellerEditInfoPage = () => {
           name="BusinessName"
           placeholder={sellerInfo.BusinessName}
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         Email :
@@ -182,6 +194,7 @@ const SellerEditInfoPage = () => {
           name="Email"
           placeholder={sellerInfo.Email}
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         Password :{" "}
@@ -189,6 +202,7 @@ const SellerEditInfoPage = () => {
           type="password"
           name="Password"
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         ConfirmPassword :{" "}
@@ -196,6 +210,7 @@ const SellerEditInfoPage = () => {
           type="password"
           name="ConfirmPassword"
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         State :{" "}
@@ -204,6 +219,7 @@ const SellerEditInfoPage = () => {
           name="State"
           placeholder={sellerInfo.State}
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         City :{" "}
@@ -212,6 +228,7 @@ const SellerEditInfoPage = () => {
           placeholder={sellerInfo.City}
           name="City"
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         FullLocation :{" "}
@@ -220,6 +237,7 @@ const SellerEditInfoPage = () => {
           name="FullLocation"
           placeholder={sellerInfo.FullLocation}
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
         PhoneNumber :{" "}
@@ -228,9 +246,12 @@ const SellerEditInfoPage = () => {
           name="PhoneNumber"
           placeholder={sellerInfo.PhoneNumber}
           onChange={(e) => handleFormChange(e)}
+          style={{ width: "100%" }}
         />
         <br />
-        <button type="submit">Edit Profile</button>
+        <button type="submit" style={{ width: "100%" }}>
+          Edit Profile
+        </button>
       </form>
     </>
   );

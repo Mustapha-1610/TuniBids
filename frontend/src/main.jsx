@@ -10,12 +10,13 @@ import AdminPrivateRoute from "./usersDirectories/adminDirectory/Interface/Admin
 import ActivationPage from "./usersDirectories/LandingPageDirectory/Pages/Activationpage.jsx";
 import BidderInterface from "./usersDirectories/biddersDirectory/Interface/BidderInterface.jsx";
 import SellerInterface from "./usersDirectories/sellerDirectory/Interface/SellerInterface.jsx";
+import LandingHomePage from "./usersDirectories/LandingPageDirectory/Pages/LandingHomePage.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <>
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/index/*" index element={<LandingPageInterface />} />
+          <Route path="/index/*" element={<LandingPageInterface />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/bidder/*" element={<BidderInterface />} />
           <Route path="/seller/*" element={<SellerInterface />} />

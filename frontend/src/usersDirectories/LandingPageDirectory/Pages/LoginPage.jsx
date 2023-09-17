@@ -68,7 +68,9 @@ const LoginPage = () => {
             setPassword(e.target.value);
           }}
         />
-        <button type="submit">Click</button>
+        <br />
+        <br />
+        <button type="submit">Login</button>
       </form>
       <h5>
         Dont Have An Account ?{" "}

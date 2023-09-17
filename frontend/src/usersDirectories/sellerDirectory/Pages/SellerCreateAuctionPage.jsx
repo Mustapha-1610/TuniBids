@@ -41,6 +41,9 @@ const SellerCreateAuctionPage = () => {
       }
       if (res?.data?.seller) {
         dispatch(setSellerCredentials({ ...res.data.seller }));
+        const timeoutId = setTimeout(() => {
+          navigate("/seller/myauctions"); // Replace "/another-page" with your desired URL
+        }, 2700);
       }
     } catch (err) {
       console.log("hello");
@@ -55,7 +58,10 @@ const SellerCreateAuctionPage = () => {
   }, [form.ProductImage]);
   useEffect(() => {
     if (form.ReservePrice && form.ParticipationFee) {
-      setMinParticipatedUsers(form.ReservePrice / form.ParticipationFee);
+      const minParticipatedUsers = Math.ceil(
+        form.ReservePrice / form.ParticipationFee
+      );
+      setMinParticipatedUsers(minParticipatedUsers);
     }
   }, [form.ReservePrice, form.ParticipationFee]);
 
@@ -140,60 +146,103 @@ const SellerCreateAuctionPage = () => {
       }
     );
   };
+  const formStyle = {
+    width: "800px",
+    margin: "0 auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    textAlign: "center",
+  };
+
+  const labelStyle = {
+    display: "block",
+    marginBottom: "10px",
+    fontWeight: "bold",
+    color: "#333",
+  };
+
+  const inputStyle = {
+    width: "80%",
+    padding: "9px",
+    marginBottom: "12px",
+    border: "1px solid #ddd",
+    borderRadius: "15 px",
+  };
+
+  const buttonStyle = {
+    backgroundColor: "#007bff",
+    color: "#fff",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    marginTop: "20px",
+  };
   return (
     <>
-      <h1>Create</h1>
-      <h4>{errorMessage}</h4>
-      <form onSubmit={handleSubmit}>
-        Title :{" "}
-        <input type="text" name="Title" onChange={(e) => handleFormChange(e)} />
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <h2 style={{ color: "#007bff" }}>Create Auction</h2>
+        <label style={labelStyle}>{errorMessage}</label>
         <br />
-        ProductDescription :{" "}
+        <label style={labelStyle}>Title : </label>
+        <input
+          type="text"
+          name="Title"
+          style={inputStyle}
+          onChange={(e) => handleFormChange(e)}
+        />
+        <label style={labelStyle}> ProductDescription : </label>
         <input
           type="text"
           name="ProductDescription"
+          style={inputStyle}
           onChange={(e) => handleFormChange(e)}
         />
-        <br />
-        ParticipationFee :{" "}
+
+        <label style={labelStyle}> ParticipationFee : </label>
         <input
           type="number"
           name="ParticipationFee"
+          style={inputStyle}
           onChange={(e) => handleFormChange(e)}
         />
-        <br />
-        DataStartAuction :{" "}
+        <label style={labelStyle}> DataStartAuction : </label>
         <input
           type="date"
           name="DataStartAuction"
+          style={inputStyle}
           onChange={(e) => handleFormChange(e)}
         />
-        <br />
-        MagasinPrice :{" "}
+        <label style={labelStyle}> MagasinPrice : </label>
         <input
           type="number"
           name="MagasinPrice"
+          style={inputStyle}
           onChange={(e) => handleFormChange(e)}
         />
-        <br />
-        ReservePrice :{" "}
+        <label style={labelStyle}> ReservePrice : </label>
         <input
           type="number"
           name="ReservePrice"
+          style={inputStyle}
           onChange={(e) => handleFormChange(e)}
         />
-        <h4>MinParticipated Users = {MinParticipatedUsers} </h4>
-        Quantity :{" "}
+        <label style={labelStyle}>
+          MinParticipated Users = {MinParticipatedUsers}{" "}
+        </label>
+        <label style={labelStyle}> Quantity : </label>
         <input
           type="number"
+          style={inputStyle}
           name="Quantity"
           onChange={(e) => handleFormChange(e)}
         />
-        <br />
         <div>
-          <label htmlFor="img">Image:</label>{" "}
+          <label htmlFor="img" style={labelStyle}>
+            Product Image :{" "}
+          </label>
           {imgPerc > 0 && "Uploading: " + imgPerc + "%"}
-          <br />
           <input
             type="file"
             accept="image/*"
@@ -201,7 +250,10 @@ const SellerCreateAuctionPage = () => {
             onChange={handleImageChange}
           />
         </div>
-        <button type="submit">Create</button>
+
+        <button style={buttonStyle} type="submit">
+          Create
+        </button>
       </form>
     </>
   );

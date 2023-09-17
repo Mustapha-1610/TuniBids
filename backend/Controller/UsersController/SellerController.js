@@ -9,7 +9,6 @@ import AuctionListing from "../../Models/AuctionEntities/AuctionListing.js";
 // Sign up function with tests on account existance and password encrypting
 export const sellerSignup = asyncHandler(async (req, res, next) => {
   try {
-    console.log("test");
     const {
       BusinessName,
       Email,
@@ -73,7 +72,7 @@ export const sellerLogin = asyncHandler(async (req, res) => {
   }
   SellerAccount = await Seller.findOne({ Email });
   if (!SellerAccount) {
-    return res.status(404).json({ Message: "Account Dosent Exist" });
+    return res.json({ Message: "Account Dosent Exist" });
   }
   const passwordcheck = bcrypt.compareSync(Password, SellerAccount.Password);
   if (!passwordcheck) {

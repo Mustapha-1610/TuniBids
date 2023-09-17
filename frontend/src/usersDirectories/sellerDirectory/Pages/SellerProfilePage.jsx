@@ -18,6 +18,7 @@ const SellerProfilePage = () => {
         borderRadius: "5px",
         boxShadow: "0 0 10px rgba(0,0,0,0.2)",
         maxWidth: "900px",
+        marginTop: "100px",
       }}
     >
       <img
@@ -52,11 +53,13 @@ const SellerProfilePage = () => {
           {sellerInfo.State}
         </p>
       </div>
-      <p style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexWrap: "wrap" }}></div>
+      <p style={{ width: "50%" }}>
         <strong>Full Location : </strong>
         {sellerInfo.FullLocation}
       </p>
-      <p style={{ width: "100%" }}>
+      <div />
+      <p style={{ width: "50%" }}>
         <strong>Rating :</strong> {sellerInfo.Rating}
       </p>
       <button
