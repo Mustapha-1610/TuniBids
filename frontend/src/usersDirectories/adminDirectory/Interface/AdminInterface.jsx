@@ -6,6 +6,9 @@ import AdminDashboardPage from "../Pages/AdminDashboardPage.jsx";
 import AdminPrivateRoute from "./AdminPrivateRoutes.jsx";
 import AdminLoginPage from "../Pages/AdminLoginPage.jsx";
 import Navbar from "../Components/Navbar.jsx";
+import ActiveSellersDashboard from "../Components/ActiveSellersDashboard.jsx";
+import SellersPendingValidationDashboard from "../Components/SellersPendingValidationDashboard.jsx";
+import SellerProfilePage from "../Pages/SellerProfilePage.jsx";
 function AdminInterface() {
   return (
     <>
@@ -18,6 +21,7 @@ function AdminInterface() {
           path="/auctionlistings/dashboard"
           element={<AuctionListingsDashboard />}
         />
+        <Route path="/seller/:sellerId" element={<SellerProfilePage />} />
       </Routes>
     </>
   );

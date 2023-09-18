@@ -7,8 +7,26 @@ adminRouter.post("/create", AdminController.createAdmin);
 adminRouter.post("/login", AdminController.adminLogin);
 adminRouter.get("/getBidders", AdminController.getBidders);
 adminRouter.route("/profile").get(protect, AdminController.getAdmin);
-adminRouter
-  .route("/validateSeller")
-  .post(protect, AdminController.validateSeller);
+adminRouter.route("/validateSeller").post(AdminController.validateSeller);
 
+//
+adminRouter.post("/getActiveSellers", AdminController.getActiveSellers);
+
+//
+adminRouter.post("/unvalidateSeller", AdminController.invalidateSeller);
+
+//
+adminRouter.post("/getDisabledSellers", AdminController.getDisabledSellers);
+
+//
+adminRouter.post(
+  "/getSellersPendingValidation",
+  AdminController.getSellersPendingValidation
+);
+
+//
+adminRouter.post(
+  "/validateSellerAccount",
+  AdminController.validateSellerAccount
+);
 export default adminRouter;

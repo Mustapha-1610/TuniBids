@@ -27,7 +27,7 @@ const LatestAuctionListing = (props) => {
           <strong>{auction.Title}</strong>
           <br />
           <div>
-            Participating Bidders: {auction?.ParticipatedBidders?.length} /{" "}
+            Participated Bidders: {auction?.ParticipatedBidders?.length} /{" "}
             {auction?.MinParticipatedUsers}
           </div>
           <div>

@@ -20,7 +20,11 @@ const BidderHomePage = () => {
         <>
           <h2>Latest Auctions</h2>
           {latestAuctions.map((auction, index) => {
-            return <LatestAuctionListing key={index} auction={auction} />;
+            return (
+              <React.Fragment key={index}>
+                <LatestAuctionListing auction={auction} />;
+              </React.Fragment>
+            );
           })}
         </>
       ) : (

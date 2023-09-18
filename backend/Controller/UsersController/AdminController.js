@@ -5,6 +5,7 @@ import asyncHandler from "express-async-handler";
 import Bidder from "../../Models/UserEntities/Bidder.js";
 import Seller from "../../Models/UserEntities/Seller.js";
 import { sendSellerConfirmationEmail } from "../../utils/NodeMailerConfig.js";
+import AuctionListing from "../../Models/AuctionEntities/AuctionListing.js";
 
 // Create an admin account
 export const createAdmin = asyncHandler(async (req, res, next) => {
@@ -90,18 +91,119 @@ export const getBidders = asyncHandler(async (req, res) => {
 //
 export const validateSeller = asyncHandler(async (req, res) => {
   try {
-    const { AdminId, SellerId } = req.body;
-    const admin = await Admin.findById(AdminId);
+    const SellerId = req.body.sellerId;
     let seller = await Seller.findById(SellerId);
-    if (!seller || !admin) {
+    if (!seller) {
       res.json({ Message: "Server Error Or Invalid Inputs" });
     }
-    seller.ValidationStatus = true;
+    seller.ActiveStatus = true;
+    let promises = [];
+    seller.Listings.Ongoing.map((item) => {
+      promises.push(AuctionListing.findById(item));
+    });
+
+    seller.Listings.Finiched.map((item) => {
+      promises.push(AuctionListing.findById(item));
+    });
+
+    seller.Listings.PendingApproval.map((item) => {
+      promises.push(AuctionListing.findById(item));
+    });
+
+    const auctions = await Promise.all(promises);
+
+    for (let auction of auctions) {
+      auction.ActivenessStatus = true;
+      await auction.save();
+    }
     await seller.save();
-    sendSellerConfirmationEmail(seller.BusinessName, seller.Email);
+
     return res.json({ Message: "Seller Verified" });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ Message: "Server Error" });
   }
 });
+
+//
+export const invalidateSeller = asyncHandler(async (req, res) => {
+  try {
+    const sellerId = req.body.sellerId;
+    let seller = await Seller.findById(sellerId);
+    if (!seller) {
+      return res.json({ Message: "Server Error" });
+    }
+    let promises = [];
+    seller.Listings.Ongoing.map((item) => {
+      promises.push(AuctionListing.findById(item));
+    });
+
+    seller.Listings.Finiched.map((item) => {
+      promises.push(AuctionListing.findById(item));
+    });
+
+    seller.Listings.PendingApproval.map((item) => {
+      promises.push(AuctionListing.findById(item));
+    });
+
+    const auctions = await Promise.all(promises);
+
+    for (let auction of auctions) {
+      auction.ActivenessStatus = false;
+      await auction.save();
+    }
+    seller.ActiveStatus = false;
+    await seller.save();
+    return res.json({ Message: "Account Disabled" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//
+export const validateSellerAccount = asyncHandler(async (req, res) => {
+  let sellerId = req.body.sellerId;
+  try {
+    let seller = await Seller.findById(sellerId);
+    seller.ValidationStatus = true;
+    await seller.save();
+    sendSellerConfirmationEmail(seller.BusinessName, seller.Email);
+    return res.json({ Message: "Seller Validated" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//
+export const getActiveSellers = asyncHandler(async (req, res) => {
+  try {
+    const sellers = await Seller.find({
+      ValidationStatus: true,
+      ActiveStatus: true,
+    });
+    return res.json({ sellers });
+  } catch (err) {
+    console.log(err);
+    return res.json({ Message: "Server Error" });
+  }
+});
+
+//
+export const getDisabledSellers = asyncHandler(async (req, res) => {
+  try {
+    let sellers = await Seller.find({ ActiveStatus: false });
+    return res.json({ sellers });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Function to display all seller accounts who are waiting to be validated
+export const getSellersPendingValidation = async (req, res) => {
+  try {
+    const PendingSellers = await Seller.find({ ValidationStatus: false });
+    res.json({ PendingSellers });
+  } catch (err) {
+    console.log(err);
+  }
+};

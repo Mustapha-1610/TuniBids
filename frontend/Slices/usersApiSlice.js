@@ -124,6 +124,48 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    adminGetActiveSellers: builder.mutation({
+      query: () => ({
+        url: `${Admin_URL}/getActiveSellers`,
+        method: "POST",
+      }),
+      refetchOnMountOrArgChange: true,
+      cacheTime: 0,
+    }),
+    adminGetSellersPendingValidation: builder.mutation({
+      query: (data) => ({
+        url: `${Admin_URL}/getSellersPendingValidation`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    admingValidateSeller: builder.mutation({
+      query: (data) => ({
+        url: `${Admin_URL}/validateSeller`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    adminUnvalidateSeller: builder.mutation({
+      query: (data) => ({
+        url: `${Admin_URL}/unvalidateSeller`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    admingetDisabledSellersAccounts: builder.mutation({
+      query: () => ({
+        url: `${Admin_URL}/getDisabledSellers`,
+        method: "POST",
+      }),
+    }),
+    adminActuallyValidatingTheSellerAcccount: builder.mutation({
+      query: (data) => ({
+        url: `${Admin_URL}/validateSellerAccount`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -177,11 +219,27 @@ export const sellerApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getSellerWithId: builder.mutation({
+      query: (data) => ({
+        url: `${Seller_URL}/getSellerWithId`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
 export const { useLoginMutation } = usersApiSlice;
-export const { useAdminloginMutation, useAdmingetbiddersQuery } = adminApiSlice;
+export const {
+  useAdminloginMutation,
+  useAdmingetbiddersQuery,
+  useAdminGetActiveSellersMutation,
+  useAdminGetSellersPendingValidationMutation,
+  useAdminUnvalidateSellerMutation,
+  useAdmingValidateSellerMutation,
+  useAdmingetDisabledSellersAccountsMutation,
+  useAdminActuallyValidatingTheSellerAcccountMutation,
+} = adminApiSlice;
 export const {
   useBidderloginMutation,
   useBiddersignupMutation,
@@ -204,4 +262,5 @@ export const {
   useGetCompletedAuctionListingsMutation,
   useGetUpdatedProfileQuery,
   useEditSellerMutation,
+  useGetSellerWithIdMutation,
 } = sellerApiSlice;

@@ -124,7 +124,10 @@ export const AuctionUnparticipating = async (req, res) => {
 //
 export const getAllOngoingAuction = async (req, res) => {
   try {
-    let AllAuctionListing = await AuctionListing.find({ OngoinStatus: true });
+    let AllAuctionListing = await AuctionListing.find({
+      OngoinStatus: true,
+      ActivenessStatus: true,
+    });
     if (AllAuctionListing.length == 0) {
       return res.json({ Message: "There Are Currently No Ongoing Auctions !" });
     }
@@ -140,6 +143,7 @@ export const getAllEndedAuctions = async (req, res) => {
   try {
     let completedAuctions = await AuctionListing.find({
       OngoinStatus: false,
+      ActivenessStatus: true,
     });
     if (completedAuctions.length == 0) {
       return res.status(403).json({ Message: "No Inactive Auctions" });
@@ -281,7 +285,10 @@ export const EndAuction = async (req, res) => {
 export const getLatestAuctions = async (req, res) => {
   try {
     const bidder = req.bidder;
-    const auctions = await AuctionListing.find({ OngoinStatus: true })
+    const auctions = await AuctionListing.find({
+      OngoinStatus: true,
+      ActivenessStatus: true,
+    })
       .sort({ _id: -1 }) // sort in descending order of creation
       .limit(5); // limit to the last 5 documents
     res.status(200).json(auctions);

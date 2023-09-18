@@ -88,22 +88,6 @@ export const sellerLogin = asyncHandler(async (req, res) => {
   return res.json({ SellerAccount });
 });
 
-// Function to display all seller accounts who are waiting to be validated
-export const SellersPendingValidation = async (req, res) => {
-  let PendingSellers;
-  try {
-    PendingSellers = await Seller.find({ ValidationStatus: false });
-    if (PendingSellers.length === 0) {
-      return res.json({
-        Message: "There are no current sellers pending validation",
-      });
-    }
-    res.status(200).json({ PendingSellers });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 // function to unvalidate and delete a seller account
 export const SellerAccountUnvalidating = async (req, res) => {
   const AdminId = req.params.AdminId;
@@ -237,5 +221,15 @@ export const editSeller = asyncHandler(async (req, res) => {
   } catch (err) {
     console.log(err);
     res.json({ Message: "Server Error" });
+  }
+});
+
+export const getSellerWithId = asyncHandler(async (req, res) => {
+  try {
+    const sellerId = req.body.sellerId;
+    const seller = await Seller.findById(sellerId);
+    return res.json({ seller });
+  } catch (err) {
+    console.log(err);
   }
 });

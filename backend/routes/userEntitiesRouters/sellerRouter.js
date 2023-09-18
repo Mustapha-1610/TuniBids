@@ -21,4 +21,7 @@ sellerRouter
   .route("/edit")
   .post(protectSellerRoutes, SellerController.editSeller);
 
+//
+sellerRouter.post("/getSellerWithId", SellerController.getSellerWithId);
+
 export default sellerRouter;
