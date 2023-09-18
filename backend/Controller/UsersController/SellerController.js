@@ -179,6 +179,9 @@ export const endAuction = async (req, res) => {
     seller.Listings.Ongoing = newOngoingArray;
     seller.Listings.Finiched.push(auctionId);
     await seller.save();
+    let auction = AuctionListing.findById(auctionId);
+    auction.OngoinStatus = false;
+    await auction.save();
     return res.json({ seller });
   } catch (err) {
     console.log(err);

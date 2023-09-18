@@ -4,9 +4,7 @@ import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 const BidderPrivateRoute = () => {
   const socket = io("http://localhost:5000/bidder");
-  const bidderAccount = useSelector(
-    (state) => state?.bidderData?.bidderInfo?.BidderAccount
-  );
+  const bidderAccount = useSelector((state) => state?.bidderData?.bidderInfo);
 
   if (bidderAccount) {
     socket.emit("userConnected", bidderAccount?._id);

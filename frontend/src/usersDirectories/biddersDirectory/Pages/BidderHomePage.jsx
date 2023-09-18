@@ -2,31 +2,30 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import { useGetLatestAuctionsQuery } from "../../../../Slices/usersApiSlice";
+import LatestAuctionListing from "../Components/LatestAuctionListings";
 const BidderHomePage = () => {
-  const socket = io("http://localhost:5000");
-  const bidderAccount = useSelector(
-    (state) => state?.bidderData?.bidderInfo?.BidderAccount
-  );
-
+  const { data, isLoading, isError } = useGetLatestAuctionsQuery();
+  const [latestAuctions, setLastestAuctions] = useState(null);
+  const bidderAccount = useSelector((state) => state?.bidderData?.bidderInfo);
   useEffect(() => {
-    socket.emit("test"); // Send "USER CONNECTED" message to the server
-
-    socket.on("message", (msg) => {
-      console.log(msg); // Log the received message from the server
-    });
-
-    return () => {
-      socket.disconnect(); // Disconnect the socket when the component unmounts
-    };
-  }, []);
-  const handleClick = (e) => {
-    e.preventDefault();
-  };
+    if (data) {
+      setLastestAuctions(data);
+      console.log(data);
+    }
+  }, [data]);
   return (
     <>
-      <h1>bidder home page</h1>
-      <h1>{bidderAccount.Email}</h1>
-      <button onClick={(e) => handleClick(e)}>Test</button>
+      {latestAuctions ? (
+        <>
+          <h2>Latest Auctions</h2>
+          {latestAuctions.map((auction, index) => {
+            return <LatestAuctionListing key={index} auction={auction} />;
+          })}
+        </>
+      ) : (
+        <p>Loading</p>
+      )}
     </>
   );
 };

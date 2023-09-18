@@ -13,12 +13,27 @@ const Navbar = () => {
       <ul style={styles.navbarList}>
         <li style={styles.navbarItem}>
           <Link to="/bidder/" style={styles.navbarLink}>
-            home
+            Home
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/bidder/ongoingauctions" style={styles.navbarLink}>
+            Ongoing
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/bidder/completedauctions" style={styles.navbarLink}>
+            Completed
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          <Link to="/bidder/howitworks" style={styles.navbarLink}>
+            How it Works
           </Link>
         </li>
         <li style={styles.navbarItem}>
           <Link to="/bidder/profile" style={styles.navbarLink}>
-            profile
+            Profile
           </Link>
         </li>
         <li style={styles.navbarItem}>
@@ -37,25 +52,49 @@ const Navbar = () => {
 
 const styles = {
   navbar: {
-    backgroundColor: "#f2f2f2",
-    padding: "10px",
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: "10px 0",
+  },
+  navbarContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    maxWidth: "auto",
+    margin: "0 auto",
+    padding: "0 20px",
+  },
+  navbarLogo: {
+    textDecoration: "none",
+    color: "#fff",
+    fontSize: "24px",
+    fontWeight: "bold",
   },
   navbarList: {
-    display: "flex",
     listStyle: "none",
-    margin: 0,
     padding: 0,
+    margin: 0,
+    display: "flex",
   },
   navbarItem: {
-    marginRight: "10px",
+    marginLeft: "20px",
   },
   navbarLink: {
     textDecoration: "none",
-    color: "#333",
+    color: "#fff",
     fontWeight: "bold",
-    padding: "5px",
-    borderRadius: "5px",
-    transition: "background-color 0.3s ease",
+    transition: "color 0.3s ease",
+  },
+  mobileMenu: {
+    display: "block",
+  },
+  desktopMenu: {
+    display: "flex",
+  },
+  mobileMenuToggle: {
+    display: "none",
+    fontSize: "24px",
+    cursor: "pointer",
   },
 };
 

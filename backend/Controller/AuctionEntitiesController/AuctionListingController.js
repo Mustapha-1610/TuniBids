@@ -1,6 +1,7 @@
 import AuctionListing from "../../Models/AuctionEntities/AuctionListing.js";
 import Bidder from "../../Models/UserEntities/Bidder.js";
 import Order from "../../Models/AuctionEntities/Order.js";
+import Seller from "../../Models/UserEntities/Seller.js";
 
 //
 export const CreateAuctionListing = async (req, res) => {
@@ -125,40 +126,25 @@ export const getAllOngoingAuction = async (req, res) => {
   try {
     let AllAuctionListing = await AuctionListing.find({ OngoinStatus: true });
     if (AllAuctionListing.length == 0) {
-      return res.status(404).json({ Message: "There Are No Auctions !" });
+      return res.json({ Message: "There Are Currently No Ongoing Auctions !" });
     }
-    return res.status(200).json({ AllAuctionListing });
+    return res.json({ AllAuctionListing });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ Message: "Server Issue !" });
+    return res.json({ Message: "Server Issue !" });
   }
 };
 
 //
 export const getAllEndedAuctions = async (req, res) => {
   try {
-    let AllInactiveAuctions = await AuctionListing.find({
+    let completedAuctions = await AuctionListing.find({
       OngoinStatus: false,
     });
-    if (AllInactiveAuctions.length == 0) {
+    if (completedAuctions.length == 0) {
       return res.status(403).json({ Message: "No Inactive Auctions" });
     }
-    return res.status(200).json({ AllInactiveAuctions });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ Message: "Server Error !" });
-  }
-};
-
-//
-export const getAuction = async (req, res) => {
-  const AuctionId = req.params.AuctionId;
-  try {
-    let Auction = await AuctionListing.findById(AuctionId);
-    if (!Auction) {
-      return res.status(403).json({ Message: "Auction Non Existant !" });
-    }
-    return res.status(200).json({ Auction });
+    return res.status(200).json({ completedAuctions });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ Message: "Server Error !" });
@@ -289,5 +275,41 @@ export const EndAuction = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json({ Message: "Server Error !" });
+  }
+};
+
+export const getLatestAuctions = async (req, res) => {
+  try {
+    const bidder = req.bidder;
+    const auctions = await AuctionListing.find({ OngoinStatus: true })
+      .sort({ _id: -1 }) // sort in descending order of creation
+      .limit(5); // limit to the last 5 documents
+    res.status(200).json(auctions);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const getAuction = async (req, res) => {
+  try {
+    const auctionId = req.body.auctionId;
+    let bidder = req.bidder;
+    let participating = false;
+    let auction = await AuctionListing.findById(auctionId);
+    if (!auction) {
+      return res.json({ Message: "Error Try Again Later !" });
+    } else {
+      if (bidder.ParticipatedAuction.OnGoing.includes(auctionId)) {
+        participating = true;
+      }
+      let seller = await Seller.findById(auction.AuctionHolder);
+      return res.json({
+        participating: participating,
+        auction: auction,
+        seller: seller,
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 };

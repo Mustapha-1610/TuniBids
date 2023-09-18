@@ -20,12 +20,13 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const res = await login({ Email, Password }).unwrap();
-      dispatch(setBidderCredentials({ ...res }));
+      console.log(res);
+      dispatch(setBidderCredentials({ ...res?.bidder }));
     } catch (err) {
       console.log(err);
       setErrorMessage(
         <>
-          {err.data.Message}
+          {err?.data?.Message}
           <button
             onClick={() => (
               handleMailRequest(

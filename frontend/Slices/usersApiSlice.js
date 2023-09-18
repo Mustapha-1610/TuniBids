@@ -61,6 +61,50 @@ export const biddersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    editBidderInformations: builder.mutation({
+      query: (data) => ({
+        url: `${Bidder_URL}/editInformations`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getLatestAuctions: builder.query({
+      query: (data) => ({
+        url: `${AuctionListing_URL}/getLatestAuctions`,
+      }),
+    }),
+    getAuction: builder.mutation({
+      query: (data) => ({
+        url: `${AuctionListing_URL}/getAuction`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    AuctionParticipation: builder.mutation({
+      query: (data) => ({
+        url: `${Bidder_URL}/participate`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    AuctionUnparticipation: builder.mutation({
+      query: (data) => ({
+        url: `${Bidder_URL}/unparticipate`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getAllOnoingAuctions: builder.query({
+      query: () => ({
+        url: `${AuctionListing_URL}/getOngoingAuctions`,
+        method: "GET",
+      }),
+    }),
+    getAllCompletedAuctions: builder.query({
+      query: () => ({
+        url: `${AuctionListing_URL}/getCompletedAuctions`,
+      }),
+    }),
   }),
 });
 
@@ -143,6 +187,13 @@ export const {
   useBiddersignupMutation,
   useBidderActivationMutation,
   useSendBidderActivationMailMutation,
+  useEditBidderInformationsMutation,
+  useGetLatestAuctionsQuery,
+  useGetAuctionMutation,
+  useAuctionParticipationMutation,
+  useAuctionUnparticipationMutation,
+  useGetAllOnoingAuctionsQuery,
+  useGetAllCompletedAuctionsQuery,
 } = biddersApiSlice;
 
 export const {

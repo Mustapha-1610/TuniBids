@@ -4,6 +4,7 @@ import generateBidderToken from "../../utils/generateBidderToken.js";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
 import { sendBidderConfirmationEmail } from "../../utils/NodeMailerConfig.js";
+import AuctionListing from "../../Models/AuctionEntities/AuctionListing.js";
 
 // create a bidder account
 export const createBidder = asyncHandler(async (req, res, next) => {
@@ -104,7 +105,7 @@ export const authBidder = asyncHandler(async (req, res) => {
       res.status(401).json({ Message: "This Account Is Disabled" });
     }
     generateBidderToken(res, BidderAccount._id);
-    return res.json({ BidderAccount });
+    return res.json({ bidder: BidderAccount });
   } catch (err) {
     console.log(err);
   }
@@ -121,102 +122,6 @@ export const bidderSendConfirmationEmail = asyncHandler(async (req, res) => {
     res.status(500).json({ Message: "Server Error" });
   }
 });
-
-//
-export const UserAccountEnabling = asyncHandler(async (req, res) => {
-  try {
-    let BidderAccount = await Bidder.findById(req.params.BidderId);
-    if (!BidderAccount) {
-      res.status(403);
-      throw new Error("Invalid Account Try Again Later");
-    }
-    BidderAccount.ActivenessStatus = true;
-    await BidderAccount.save();
-    return res.status(200).json({ Message: "Account Enabled !" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ Message: "Server Error !" });
-  }
-});
-
-//
-export const getBidder = async (req, res) => {
-  try {
-    let BidderAccount = await Bidder.findById(req.params.BidderId);
-    if (!BidderAccount) {
-      return res.status(400).json({ Message: "Error Account Non Existant" });
-    }
-    return res.status(200).json({ BidderAccount });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).status({ Message: "Server Error !" });
-  }
-};
-
-// disable bidder account
-export const AccountDisabling = async (req, res) => {
-  try {
-    let DisabledAccount = await Bidder.findById(req.params.id);
-    if (!DisabledAccount) {
-      return res.status(500).json({ Message: "Server Error Try Again Soon !" });
-    }
-    DisabledAccount.ActivenessStatus = false;
-    await DisabledAccount.save();
-    return res.status(200).json({ Message: "Account Disabled" });
-  } catch (err) {
-    console.log({ err });
-    return res.status(500).status({ Message: "Server Error !" });
-  }
-};
-
-// a function for bidders to buy tokens
-export const BuyTokens = async (req, res) => {
-  try {
-    const TokenId = req.params.TokenId;
-    const BidderId = req.params.BidderId;
-    const { Amount } = req.body;
-    let BidderAccount, Token;
-    let newToken = null;
-
-    BidderAccount = await Bidder.findById(BidderId);
-    Token = await Tokens.findById(TokenId); // Update this line
-
-    if (!BidderAccount) {
-      return res.status(404).json({ Message: "Bidder not found!" });
-    }
-
-    if (!Token) {
-      return res.status(404).json({ Message: "Token not found!" });
-    }
-
-    let token;
-    for (let i = 0; i < BidderAccount.TokenStorage.length; i++) {
-      if (BidderAccount.TokenStorage[i].Token.Value.equals(Token._id)) {
-        token = BidderAccount.TokenStorage[i];
-        break;
-      }
-    }
-    console.log(token);
-    if (!token) {
-      newToken = {
-        Token: {
-          Value: TokenId,
-          Amount: Amount,
-        },
-      };
-      BidderAccount.TokenStorage.push(newToken);
-      BidderAccount = await BidderAccount.save();
-      return res.status(201).json({ Message: "Purchase successfull !" });
-    } else {
-      token.Token.Amount = token.Token.Amount + Amount;
-      BidderAccount = await BidderAccount.save();
-      return res.status(200).json({ Message: "Purchase successfull !" });
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).status({ Message: "Server Error !" });
-  }
-};
 
 //
 export const verifyBidderAccount = async (req, res) => {
@@ -244,4 +149,87 @@ export const verifyBidderAccount = async (req, res) => {
 export const getProfile = asyncHandler(async (req, res) => {
   let bidder = await Bidder.findById(req.bidder._id);
   console.log(bidder);
+});
+
+export const AuctionParticipation = asyncHandler(async (req, res) => {
+  try {
+    let bidder = req.bidder;
+    let auctionId = req.body.auctionId;
+    let auction = await AuctionListing.findById(auctionId);
+    auction.ParticipatedBidders.push(bidder._id);
+    bidder.ParticipatedAuction.OnGoing.push(auctionId);
+    await bidder.save();
+    await auction.save();
+    return res.json({ bidder: bidder });
+  } catch (err) {
+    console.log(err);
+    return res.json({ Message: "Server Error" });
+  }
+});
+
+export const AuctionUnparticipating = asyncHandler(async (req, res) => {
+  try {
+    let bidder = req.bidder;
+    let auctionId = req.body.auctionId;
+    let auction = await AuctionListing.findById(auctionId);
+    const newParticipatingBidders = auction.ParticipatedBidders.filter(
+      (_id) => _id.toString() !== bidder._id.toString()
+    );
+    auction.ParticipatedBidders = newParticipatingBidders;
+
+    const newParticipatedAuctions = bidder.ParticipatedAuction.OnGoing.filter(
+      (_id) => _id.toString() !== auctionId.toString()
+    );
+    bidder.ParticipatedAuction = newParticipatedAuctions;
+    await bidder.save();
+    await auction.save();
+    return res.json({ bidder: bidder });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+export const editBidderInformations = asyncHandler(async (req, res) => {
+  try {
+    const {
+      Name,
+      Surname,
+      Email,
+      ProfilePicture,
+      State,
+      City,
+      FullAdress,
+      PhoneNumber,
+    } = req.body;
+    console.log(Email);
+
+    let bidder;
+    if (Email) {
+      bidder = await Bidder.findOne({ Email });
+      if (bidder) {
+        console.log(bidder);
+        return res.json({ Message: "Email Exists Allready" });
+      }
+    }
+
+    bidder = await Bidder.findOne({ PhoneNumber });
+    if (bidder) {
+      return res.json({
+        Message: "Phone Number Allready Used On Another Account !",
+      });
+    }
+    bidder = req.bidder;
+    Email ? (bidder.Email = Email) : null;
+    Name ? (bidder.Name = Name) : null;
+    Surname ? (bidder.Surname = Surname) : null;
+    ProfilePicture ? (bidder.ProfilePicture = ProfilePicture) : null;
+    State ? (bidder.State = State) : null;
+    City ? (bidder.City = City) : null;
+    FullAdress ? (bidder.FullAdress = FullAdress) : null;
+    await bidder.save();
+    return res.json({ bidder: bidder });
+  } catch (err) {
+    console.log(err);
+    return res.json({ Message: "Server Error" });
+  }
 });

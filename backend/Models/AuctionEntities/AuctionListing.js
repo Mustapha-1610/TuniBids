@@ -29,7 +29,7 @@ const auctionlistingSchema = new Schema({
       type: Date,
       required: true,
     },
-    DateEndAuction: {
+    Auctioncompletiondate: {
       type: Date,
     },
   },
@@ -71,7 +71,6 @@ const auctionlistingSchema = new Schema({
       required: true,
     },
   },
-
   AdminRejectionComment: {
     type: String,
   },
@@ -82,6 +81,9 @@ const auctionlistingSchema = new Schema({
   ActivenessStatus: {
     type: Boolean,
     default: false,
+  },
+  Winningprice: {
+    type: Number,
   },
 });
 export default mongoose.model("AuctionListing", auctionlistingSchema);
