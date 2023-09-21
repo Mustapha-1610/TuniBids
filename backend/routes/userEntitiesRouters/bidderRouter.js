@@ -16,7 +16,8 @@ bidderRouter.post(
 //
 bidderRouter
   .route("/getProfile")
-  .get(protectBidderRoutes, bidderController.getProfile);
+  .get(protectBidderRoutes, bidderController.getProfile)
+  .post(protectBidderRoutes, bidderController.getProfile);
 //
 bidderRouter
   .route("/participate")
@@ -30,4 +31,26 @@ bidderRouter
   .route("/editInformations")
   .post(protectBidderRoutes, bidderController.editBidderInformations);
 
+//
+bidderRouter
+  .route("/getOngoingAuctions")
+  .post(protectBidderRoutes, bidderController.getBidderOngoingAuctions);
+
+//
+bidderRouter
+  .route("/getFinichedAuctions")
+  .post(protectBidderRoutes, bidderController.getBidderFinichedAuctions);
+
+//
+bidderRouter
+  .route("/getWonAuctions")
+  .post(protectBidderRoutes, bidderController.getBidderWonAuctions);
+
+//
+bidderRouter
+  .route("/sendAuctionRoomStartingNotification")
+  .post(
+    protectBidderRoutes,
+    bidderController.sendAuctionRoomStartingNotification
+  );
 export default bidderRouter;

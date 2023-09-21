@@ -5,6 +5,7 @@ const Admin_URL = "/api/admin";
 const Bidder_URL = "/api/bidder";
 const Seller_URL = "/api/seller";
 const AuctionListing_URL = "/api/auctionlisting";
+const AuctionRoom_URL = "/api/auctionroom";
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -33,6 +34,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 //
 export const biddersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getUpdatedBidderInfo: builder.mutation({
+      query: () => ({
+        url: `${Bidder_URL}/getProfile`,
+        method: "POST",
+      }),
+    }),
     bidderlogin: builder.mutation({
       query: (data) => ({
         url: `${Bidder_URL}/auth`,
@@ -105,6 +112,45 @@ export const biddersApiSlice = apiSlice.injectEndpoints({
         url: `${AuctionListing_URL}/getCompletedAuctions`,
       }),
     }),
+    bidderGetOngoingAuctions: builder.mutation({
+      query: () => ({
+        url: `${Bidder_URL}/getOngoingAuctions`,
+        method: "POST",
+      }),
+    }),
+    bidderGetFinicheAuctions: builder.mutation({
+      query: () => ({
+        url: `${Bidder_URL}/getFinichedAuctions`,
+        method: "POST",
+      }),
+    }),
+    bidderGetWonAuctions: builder.mutation({
+      query: () => ({
+        url: `${Bidder_URL}/getWonAuctions`,
+        method: "POST",
+      }),
+    }),
+    bidderSendStartingNotifications: builder.mutation({
+      query: (data) => ({
+        url: `${Bidder_URL}/sendAuctionRoomStartingNotification`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    bidderGetAuctionRoomInfo: builder.mutation({
+      query: (data) => ({
+        url: `${AuctionRoom_URL}/getRoomInfo`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    bidderUpdateAuctionRoom: builder.mutation({
+      query: (data) => ({
+        url: `${AuctionRoom_URL}/updateAuctionRoom`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -162,6 +208,39 @@ export const adminApiSlice = apiSlice.injectEndpoints({
     adminActuallyValidatingTheSellerAcccount: builder.mutation({
       query: (data) => ({
         url: `${Admin_URL}/validateSellerAccount`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    adminGetActiveBidders: builder.mutation({
+      query: () => ({
+        url: `${Admin_URL}/getActiveBidders`,
+        method: "POST",
+      }),
+    }),
+    adminGetDisabledBidders: builder.mutation({
+      query: () => ({
+        url: `${Admin_URL}/getDisabledBidders`,
+        method: "POST",
+      }),
+    }),
+    adminUnlockBidders: builder.mutation({
+      query: (data) => ({
+        url: `${Admin_URL}/unlockBidderAccount`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    adminLockBidders: builder.mutation({
+      query: (data) => ({
+        url: `${Admin_URL}/lockBidderAccount`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    adminStartRoom: builder.mutation({
+      query: (data) => ({
+        url: `${AuctionRoom_URL}/startRoom`,
         method: "POST",
         body: data,
       }),
@@ -239,8 +318,14 @@ export const {
   useAdmingValidateSellerMutation,
   useAdmingetDisabledSellersAccountsMutation,
   useAdminActuallyValidatingTheSellerAcccountMutation,
+  useAdminGetActiveBiddersMutation,
+  useAdminGetDisabledBiddersMutation,
+  useAdminLockBiddersMutation,
+  useAdminUnlockBiddersMutation,
+  useAdminStartRoomMutation,
 } = adminApiSlice;
 export const {
+  useGetUpdatedBidderInfoMutation,
   useBidderloginMutation,
   useBiddersignupMutation,
   useBidderActivationMutation,
@@ -252,6 +337,12 @@ export const {
   useAuctionUnparticipationMutation,
   useGetAllOnoingAuctionsQuery,
   useGetAllCompletedAuctionsQuery,
+  useBidderGetFinicheAuctionsMutation,
+  useBidderGetWonAuctionsMutation,
+  useBidderGetOngoingAuctionsMutation,
+  useBidderSendStartingNotificationsMutation,
+  useBidderGetAuctionRoomInfoMutation,
+  useBidderUpdateAuctionRoomMutation,
 } = biddersApiSlice;
 
 export const {

@@ -1,13 +1,34 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { bidderLogout } from "../../../../Slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import socket from "../socket";
+import { useSelector, useDispatch } from "react-redux";
+import { setBidderCredentials } from "../../../../Slices/authSlice";
+import { useGetUpdatedBidderInfoMutation } from "../../../../Slices/usersApiSlice";
 const Navbar = () => {
+  const bidderAccount = useSelector((state) => state?.bidderData?.bidderInfo);
+  const [getNotification, { isLoading }] = useGetUpdatedBidderInfoMutation();
+  const handleSendingStartingNotification = async (roomId) => {
+    const res = await getNotification();
+    dispatch(setBidderCredentials({ ...res?.data?.bidder }));
+  };
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  useEffect;
+  const [RoomId, setRoomId] = useState(null);
+  socket.on("recieveNotifications", ({ bidders, roomId }) => {
+    if (bidders.includes(bidderAccount._id)) {
+      handleSendingStartingNotification(roomId);
+    }
+  });
+  const [notifications, setNotifications] = useState("");
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   return (
     <nav style={styles.navbar}>
       <ul style={styles.navbarList}>
@@ -27,6 +48,11 @@ const Navbar = () => {
           </Link>
         </li>
         <li style={styles.navbarItem}>
+          <Link to="/bidder/history" style={styles.navbarLink}>
+            History
+          </Link>
+        </li>
+        <li style={styles.navbarItem}>
           <Link to="/bidder/howitworks" style={styles.navbarLink}>
             How it Works
           </Link>
@@ -35,6 +61,24 @@ const Navbar = () => {
           <Link to="/bidder/profile" style={styles.navbarLink}>
             Profile
           </Link>
+        </li>
+        <li style={styles.navbarItem}>
+          {bidderAccount?.Notifications.map((item, index) => {
+            return (
+              <div key={index}>
+                <p>
+                  {item.NotificationMessage}
+                  <button
+                    onClick={() =>
+                      navigate(`/bidder/auctionRoom/${item.RoomId}`)
+                    }
+                  >
+                    Join Room
+                  </button>
+                </p>
+              </div>
+            );
+          })}
         </li>
         <li style={styles.navbarItem}>
           <button

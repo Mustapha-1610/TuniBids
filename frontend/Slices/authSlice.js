@@ -5,6 +5,9 @@ const biddersInitialState = {
   bidderInfo: localStorage.getItem("bidderInfo")
     ? JSON.parse(localStorage.getItem("bidderInfo"))
     : null,
+  bidderSocket: localStorage.getItem("bidderSocket")
+    ? localStorage.getItem("bidderSocket")
+    : null,
 };
 
 //
@@ -31,7 +34,11 @@ const bidderSlice = createSlice({
     },
     bidderLogout: (state, action) => {
       state.bidderInfo = null;
+      state.bidderSocket = null;
       localStorage.removeItem("bidderInfo");
+    },
+    setBidderSocket: (state, action) => {
+      state.bidderSocket = action.payload;
     },
   },
 });
@@ -57,7 +64,7 @@ const sellerSlice = createSlice({
   reducers: {
     setSellerCredentials: (state, action) => {
       state.sellerInfo = action.payload;
-      localStorage.setItem("sellerInfo", JSON.stringify(action.payload));
+      localStorage.setItem("sellerInfo", action.payload);
     },
     sellerLogout: (state, action) => {
       state.sellerInfo = null;
@@ -66,7 +73,8 @@ const sellerSlice = createSlice({
   },
 });
 
-export const { setBidderCredentials, bidderLogout } = bidderSlice.actions;
+export const { setBidderCredentials, bidderLogout, setBidderSocket } =
+  bidderSlice.actions;
 export const { setSellerCredentials, sellerLogout } = sellerSlice.actions;
 export const { setAdminCredentials, adminLogout } = adminSlice.actions;
 

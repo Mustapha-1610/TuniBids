@@ -29,4 +29,16 @@ adminRouter.post(
   "/validateSellerAccount",
   AdminController.validateSellerAccount
 );
+
+//
+adminRouter.post("/getActiveBidders", AdminController.getActiveBidders);
+
+//
+adminRouter.post("/getDisabledBidders", AdminController.getDisabledBidders);
+
+//
+adminRouter.post("/unlockBidderAccount", AdminController.unlockBidderAccount);
+
+//
+adminRouter.post("/lockBidderAccount", AdminController.lockBidderAcccount);
 export default adminRouter;

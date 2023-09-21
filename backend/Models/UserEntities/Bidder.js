@@ -53,7 +53,6 @@ const bidderSchema = new Schema({
       {
         type: Schema.Types.ObjectId,
         ref: "AuctionListing",
-        default: null,
       },
     ],
     Finiched: [
@@ -101,7 +100,14 @@ const bidderSchema = new Schema({
   ],
   Notifications: [
     {
-      type: String,
+      NotificationMessage: {
+        type: String,
+      },
+      RoomId: {
+        type: Schema.Types.ObjectId,
+        ref: "AuctionRoom",
+        default: null,
+      },
     },
   ],
   ProfilePicture: {

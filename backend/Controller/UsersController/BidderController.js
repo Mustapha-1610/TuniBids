@@ -128,7 +128,7 @@ export const verifyBidderAccount = async (req, res) => {
   try {
     const { BidderId, ActivationCode } = req.body;
     let VerifiedAccount = await Bidder.findById(BidderId);
-    const ActivationTest = (VerifiedAccount.ActivationCode = ActivationCode);
+    const ActivationTest = VerifiedAccount.ActivationCode === ActivationCode;
     let Activated;
     if (!ActivationTest) {
       res.json({ Activated: false });
@@ -147,8 +147,8 @@ export const verifyBidderAccount = async (req, res) => {
 
 //
 export const getProfile = asyncHandler(async (req, res) => {
-  let bidder = await Bidder.findById(req.bidder._id);
-  console.log(bidder);
+  let bidder = req.bidder;
+  return res.json({ bidder: bidder });
 });
 
 export const AuctionParticipation = asyncHandler(async (req, res) => {
@@ -233,3 +233,65 @@ export const editBidderInformations = asyncHandler(async (req, res) => {
     return res.json({ Message: "Server Error" });
   }
 });
+
+export const getBidderOngoingAuctions = asyncHandler(async (req, res) => {
+  try {
+    const bidder = req.bidder;
+    let Auctions = [];
+    bidder.ParticipatedAuction.OnGoing.map((item) => {
+      Auctions.push(AuctionListing.findById(item));
+    });
+    const OnGoing = await Promise.all(Auctions);
+    return res.json({ Ongoing: OnGoing });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+export const getBidderFinichedAuctions = asyncHandler(async (req, res) => {
+  try {
+    const bidder = req.bidder;
+    let Auctions = [];
+
+    bidder.ParticipatedAuction.Finiched.map((item) => {
+      Auctions.push(AuctionListing.findById(item));
+    });
+    const Finiched = await Promise.all(Auctions.Finiched);
+    return res.json({ Finiched: Finiched });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//
+export const getBidderWonAuctions = asyncHandler(async (req, res) => {
+  try {
+    const bidder = req.bidder;
+    let Auctions = [];
+    bidder.ParticipatedAuction.AuctionWon.map((item) => {
+      Auctions.push(AuctionListing.findById(item));
+    });
+    const Won = await Promise.all(Auctions.Won);
+    return res.json({ Won: Won });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+export const sendAuctionRoomStartingNotification = asyncHandler(
+  async (req, res) => {
+    try {
+      let roomId = req.body.roomId;
+      let bidder = req.bidder;
+      const notification = {
+        NotificationMessage: "Auction Started",
+        RoomId: roomId,
+      };
+      bidder.Notifications.push(notification);
+      await bidder.save();
+      return res.json({ bidder });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);

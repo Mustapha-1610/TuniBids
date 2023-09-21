@@ -56,6 +56,7 @@ export const CreateAuctionListing = async (req, res) => {
         ProductImage,
       },
       AuctionHolder: req.seller._id,
+      SellerId: req.seller._id,
       MinParticipatedUsers,
     });
     await newAuctionListing.save();
@@ -229,53 +230,30 @@ export const EditAuction = async (req, res) => {
 
 //
 export const EndAuction = async (req, res) => {
-  const BidderId = req.params.BidderId;
-  const AuctionId = req.params.AuctionId;
   try {
-    let Auction = await AuctionListing.findById(req.params.AuctionId);
-    Auction.AuctionWinner = req.params.BidderId;
-    Auction.OngoinStatus = false;
-    const currentDate = new Date();
-    Auction.DateFinichAuction = currentDate;
-    const futureDate = new Date(currentDate.setDate(currentDate.getDate() + 6));
-    let newOrder = new Order({
-      WinningBidder: req.params.BidderId,
-      Product: Auction.Product,
-      Date: {
-        EstimiatedArrivalDate: futureDate,
-      },
-    });
-    Auction = await Auction.save();
-    newOrder = await newOrder.save();
-    for (let i = 0; i < Auction.ParticipatedBidders.length; i++) {
-      let participatingBidder = await Bidder.findById(
-        Auction.ParticipatedBidders[i]
+    const bidderId = req.body.bidderId;
+    const auctionId = req.body.auctionId;
+    let bidder = req.bidder;
+    if (bidder._id === bidderId) {
+      let newOngoingAuctions = bidder.ParticipatedAuction.OnGoing.filter(
+        (_id) => _id.toString() !== auctionId.toString()
       );
-      participatingBidder.ParticipatedAuction.OnGoing =
-        participatingBidder.ParticipatedAuction.OnGoing.filter(
-          (Auction) => Auction.toString() !== req.params.AuctionId
-        );
-      participatingBidder.ParticipatedAuction.Finiched.push(
-        req.params.AuctionId
+      bidder.ParticipatedAuction.OnGoing = newOngoingAuctions;
+      bidder.ParticipatedAuction.Finiched.push(auctionId);
+      bidder.ParticipatedAuction.AuctionWon.push(auctionId);
+      bidder.Notifications.push("Auction Over You Are The Winner");
+      await bidder.save();
+      return res.json({ bidder: bidder });
+    } else {
+      let newOngoingAuctions = bidder.ParticipatedAuction.OnGoing.filter(
+        (_id) => _id.toString() !== auctionId.toString()
       );
-      participatingBidder.Notifications.push(
-        Auction.Title + " auction has ended at \n" + new Date()
-      );
-      if (Auction.ParticipatedBidders[i] === req.params.BidderId) {
-        participatingBidder.WinningsOrders.push(newOrder._id);
-        participatingBidder.Notifications.push(
-          "You Won The " +
-            Auction.Title +
-            "\n Product Should Arrive at " +
-            newOrder.Date.EstimiatedArrivalDate
-        );
-        participatingBidder.ParticipatedAuction.AuctionWon.push(
-          req.params.AuctionId
-        );
-      }
-      participatingBidder = await participatingBidder.save();
+      bidder.ParticipatedAuction.OnGoing = newOngoingAuctions;
+      bidder.ParticipatedAuction.Finiched.push(auctionId);
+      bidder.Notifications.push("Auction is Over");
+      await bidder.save();
+      return res.json({ bidder: bidder });
     }
-    return res.status(200);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ Message: "Server Error !" });

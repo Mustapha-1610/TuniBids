@@ -14,8 +14,6 @@ auctionListingRouter
 auctionListingRouter
   .route("/getAuction")
   .post(protectBidderRoutes, auctionListingController.getAuction);
-export default auctionListingRouter;
-
 auctionListingRouter.get(
   "/getOngoingAuctions",
   auctionListingController.getAllOngoingAuction
@@ -25,3 +23,8 @@ auctionListingRouter.get(
   "/getCompletedAuctions",
   auctionListingController.getAllEndedAuctions
 );
+
+auctionListingRouter
+  .route("/endAuction")
+  .post(protectBidderRoutes, auctionListingController.EndAuction);
+export default auctionListingRouter;

@@ -11,7 +11,6 @@ const CompletedAuctions = (props) => {
   useEffect(() => {
     if (props.auction) {
       setAuction(props.auction);
-      console.log(auction);
     }
   });
   return (

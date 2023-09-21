@@ -207,3 +207,51 @@ export const getSellersPendingValidation = async (req, res) => {
     console.log(err);
   }
 };
+
+export const getActiveBidders = async (req, res) => {
+  try {
+    let activeBidders = await Bidder.find({
+      ActivationStatus: true,
+      ActivenessStatus: true,
+    });
+    return res.json({ bidders: activeBidders });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getDisabledBidders = async (req, res) => {
+  try {
+    let disabledBidders = await Bidder.find({
+      ActivationStatus: true,
+      ActivenessStatus: false,
+    });
+    return res.json({ bidders: disabledBidders });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const unlockBidderAccount = async (req, res) => {
+  try {
+    const bidderId = req.body.bidderId;
+    let bidder = await Bidder.findById(bidderId);
+    bidder.ActivenessStatus = true;
+    await bidder.save();
+    return res.json({ Message: "Bidder Account Unlocked" });
+  } catch (ere) {
+    console.log(err);
+  }
+};
+
+export const lockBidderAcccount = async (req, res) => {
+  try {
+    const bidderId = req.body.bidderId;
+    let bidder = await Bidder.findById(bidderId);
+    bidder.ActivenessStatus = false;
+    await bidder.save();
+    return res.json({ Message: "Bidder Account Locked " });
+  } catch (err) {
+    console.log(err);
+  }
+};

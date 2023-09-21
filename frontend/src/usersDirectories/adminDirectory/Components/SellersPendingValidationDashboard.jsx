@@ -8,7 +8,6 @@ const SellersPendingValidationDashboard = () => {
   const [selersPendingValidation, setSellersPendingValidation] = useState([]);
   const getsellers = async () => {
     const res = await getSellersPendingValidation();
-    console.log(res);
     setSellersPendingValidation(res?.data?.PendingSellers);
   };
   useEffect(() => {

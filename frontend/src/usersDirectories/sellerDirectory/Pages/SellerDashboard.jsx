@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useGetUpdatedProfileQuery } from "../../../../Slices/usersApiSlice";
 import { useDispatch } from "react-redux";
 import { setSellerCredentials } from "../../../../Slices/authSlice";
+import { io } from "socket.io-client";
 const SellerDashboard = () => {
   const sellerInfo = useSelector((state) => state.sellerData.sellerInfo);
   const { data: sellerData, isLoading, isError } = useGetUpdatedProfileQuery();
@@ -14,7 +15,9 @@ const SellerDashboard = () => {
   const [pendingOrders, setPendingOrders] = useState(null);
   const [shippedOrders, setShippedOrders] = useState(null);
   const dispatch = useDispatch();
-
+  const socket = io("http://localhost:5000/seller", {
+    transports: ["websocket"],
+  });
   useEffect(() => {
     if (sellerInfo) {
       setEarnings(sellerInfo.Earnings);

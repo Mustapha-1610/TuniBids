@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSendBidderActivationMailMutation } from "../../../../Slices/usersApiSlice";
 import { setBidderCredentials } from "../../../../Slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { setBidderSocket } from "../../../../Slices/authSlice";
+import { io } from "socket.io-client";
 const LoginPage = () => {
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");

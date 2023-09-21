@@ -1,9 +1,23 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
+import DisabledBiddersAccounts from "../Components/DisableBiddersAccounts";
+import ActiveBiddersDashboard from "../Components/activeBiddersDashboad";
 const BiddersDashboard = () => {
+  const [component, setComponent] = useState(<ActiveBiddersDashboard />);
   return (
     <>
-      <h1>Bidders Dashboard</h1>
+      <button
+        type="button"
+        onClick={() => setComponent(<ActiveBiddersDashboard />)}
+      >
+        Active Bidder Accounts
+      </button>
+      <button
+        type="button"
+        onClick={() => setComponent(<DisabledBiddersAccounts />)}
+      >
+        Disabled Bidder Accounts
+      </button>
+      {component}
     </>
   );
 };

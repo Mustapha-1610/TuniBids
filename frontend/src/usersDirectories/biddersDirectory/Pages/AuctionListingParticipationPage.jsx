@@ -119,7 +119,7 @@ const AuctionListingPage = () => {
         max={auction?.MinParticipatedUsers}
         style={{ width: "100%" }}
       ></progress>
-      <h7>Auction Room only starts after the bar is fully filled !</h7>
+      <h6>Auction Room only starts after the bar is fully filled !</h6>
       <div
         style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}
       >

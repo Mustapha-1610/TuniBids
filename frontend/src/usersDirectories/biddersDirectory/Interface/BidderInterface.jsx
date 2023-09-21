@@ -11,6 +11,8 @@ import BidderFinichedPage from "../Pages/bidderFinichedPage";
 import CompletedAuctionPage from "../Pages/CompletedAuctionPage";
 import HowItWorks from "../Pages/bidderHowItWorks";
 import BidderEditPersonalInfo from "../Pages/BidderEditPersonalInfo";
+import BidderHistory from "../Pages/BidderHistory";
+import AuctionPage from "../Pages/AuctionPage";
 function BidderInterface() {
   return (
     <>
@@ -31,6 +33,8 @@ function BidderInterface() {
           <Route path="/completedauctions" element={<BidderFinichedPage />} />
           <Route path="/howitworks" element={<HowItWorks />} />
           <Route path="/edit" element={<BidderEditPersonalInfo />} />
+          <Route path="/history" element={<BidderHistory />} />
+          <Route path="/auctionRoom/:roomId" element={<AuctionPage />} />
         </Route>
       </Routes>
     </>

@@ -85,5 +85,13 @@ const auctionlistingSchema = new Schema({
   Winningprice: {
     type: Number,
   },
+  RoomId: {
+    type: Schema.Types.ObjectId,
+    ref: "AuctionListing",
+  },
+  SellerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Seller",
+  },
 });
 export default mongoose.model("AuctionListing", auctionlistingSchema);
